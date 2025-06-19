@@ -18,6 +18,35 @@ Rails.application.configure do
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
+  # Enable the asset pipeline
+  config.assets.compile = false  # This disables runtime compilation (recommended for production)
+  config.assets.digest = true    # Generates digests for assets URLs, helping with caching
+  config.assets.js_compressor = :uglifier # Compresses JavaScript using Uglifier
+  config.assets.css_compressor = :scss # Compresses CSS using SCSS
+
+  # Enable caching in production
+  config.cache_store = :mem_cache_store, "localhost" # or use Heroku's caching service if available
+  config.action_controller.perform_caching = true
+  config.cache_classes = true
+  config.eager_load = true
+
+  # Show full error reports in development only
+  config.consider_all_requests_local = false
+
+# Enable serving static files
+  config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
+
+# Enable error reports and disable caching for debugging
+  config.action_dispatch.show_exceptions = false
+  config.action_controller.allow_forgery_protection = true
+
+  # Production logging
+  config.log_level = :info     # or :debug for more verbose logs
+  config.logger = Logger.new(STDOUT)  # Log to stdout (common in Heroku)
+# Force SSL (HTTPS)
+  config.force_ssl = true
+
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
@@ -78,6 +107,19 @@ Rails.application.configure do
 
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
+
+  config.cache_classes = true
+  config.eager_load = true
+  config.consider_all_requests_local = false
+  config.assets.compile = false
+  config.assets.digest = true
+  config.assets.js_compressor = :uglifier
+  config.assets.css_compressor = :scss
+  config.log_level = :info
+  config.logger = Logger.new(STDOUT)
+  config.force_ssl = true
+  config.action_mailer.default_url_options = { host: 'amibeingscammed.herokuapp.com' }
+  
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
