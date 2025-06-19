@@ -1,0 +1,2 @@
+module ScamCheckHelper
+end
