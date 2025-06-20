@@ -1,33 +1,33 @@
 <div class="bg-[#1A237E] pb-12">
-  <nav class="w-full flex items-center justify-between py-2 px-8 shadow-sm">
-    <div class="flex-1 flex justify-start">
+  <nav class="w-full flex flex-col md:flex-row items-center justify-between py-4 px-8 shadow-sm">
+    <div class="flex justify-center md:justify-start">
       <a href="/" class="text-2xl font-bold text-white">amibeingscammed</a>
     </div>
 
-    <div class="flex-1 flex justify-end space-x-8">
+    <div class="flex justify-center md:justify-end space-x-4 md:space-x-8 mt-4 md:mt-0">
       <a href="#features" class="text-white hover:text-[#90CAF9] font-medium">Features</a>
       <a href="#about" class="text-white hover:text-[#90CAF9] font-medium">About</a>
     </div>
   </nav>
 
-  <main class="flex flex-col items-center px-4">
+  <main class="flex flex-col items-center px-4 mt-8">
     <div class="flex justify-center">
       <div class="bg-blue-200 rounded-full p-4">
-        <%= image_tag "logo.png", class: "h-96 w-96" %>
+        <%= image_tag "logo.png", class: "h-48 w-48 md:h-96 md:w-96" %>
       </div>
     </div>
 
-    <div class="text-center mt-4">
-      <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6">AI Scam Detection for Everyone</h1>
-      <p class="text-lg md:text-2xl text-[#90CAF9] mb-8 text-center">Instantly analyze suspicious messages, emails, and websites with AI-powered scam detection. Stay safe online with actionable insights and peace of mind.</p>
-      <%= link_to "Get Started", scam_check_index_path, class: "px-8 py-4 bg-[#4F46E5] text-white rounded-lg text-xl font-semibold shadow-lg hover:bg-[#3423A6] transition-colors duration-200" %>
+    <div class="text-center mt-8">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">AI Scam Detection for Everyone</h1>
+      <p class="text-lg md:text-xl text-[#90CAF9] mb-8 max-w-2xl mx-auto">Instantly analyze suspicious messages, emails, and websites with AI-powered scam detection. Stay safe online with actionable insights and peace of mind.</p>
+      <%= link_to "Get Started", scam_check_index_path, class: "px-6 py-3 md:px-8 md:py-4 bg-[#4F46E5] text-white rounded-lg text-lg md:text-xl font-semibold shadow-lg hover:bg-[#3423A6] transition-colors duration-200" %>
     </div>
   </main>
 </div>
 
-<section id="features" class="py-16 bg-[#232B4D]">
+<section id="features" class="py-12 md:py-16 bg-[#232B4D]">
   <div class="max-w-4xl mx-auto px-4">
-    <h2 class="text-3xl font-bold text-white mb-6 text-center">Features</h2>
+    <h2 class="text-3xl font-bold text-white mb-8 text-center">Features</h2>
     <ul class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <li class="bg-[#283593] p-6 rounded-lg shadow text-center">
         <span class="text-2xl font-bold text-[#90CAF9]">1</span>
@@ -45,7 +45,7 @@
   </div>
 </section>
 
-<section id="about" class="py-16 bg-[#1A237E]">
+<section id="about" class="py-12 md:py-16 bg-[#1A237E]">
   <div class="max-w-3xl mx-auto px-4 text-center">
     <h2 class="text-3xl font-bold text-white mb-6">About</h2>
     <p class="text-lg text-[#90CAF9]">amibeingscammed is dedicated to helping everyone stay safe from online scams. Our AI analyzes suspicious content and provides clear, actionable advice.</p>
