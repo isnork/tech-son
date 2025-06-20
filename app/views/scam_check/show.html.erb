@@ -1,0 +1,346 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <%= link_to root_path, class: "inline-flex items-center text-[#3423A6] hover:text-[#2a1c85] transition-colors" do %>
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Back to Form
+    <% end %>
+  </div>
+
+  <!-- Original Submission -->
+  <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Original Submission</h2>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-gray-900 whitespace-pre-wrap"><%= @scam_check.description %></p>
+        </div>
+      </div>
+      
+      <% if @scam_check.email.present? %>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Sender Email</label>
+          <p class="text-gray-900"><%= @scam_check.email %></p>
+        </div>
+      <% end %>
+      
+      <% if @scam_check.url.present? %>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Suspicious URL</label>
+          <p class="text-gray-900 break-all"><%= @scam_check.url %></p>
+        </div>
+      <% end %>
+      
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Submitted</label>
+        <p class="text-gray-900"><%= @scam_check.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div class="bg-white rounded-xl shadow-lg p-8">
+    <div class="flex items-center mb-6">
+      <div class="w-10 h-10 bg-[#3423A6] rounded-full flex items-center justify-center mr-4">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900">AI Security Analysis</h2>
+    </div>
+
+    <% if @scam_check.analysis.present? %>
+      <div class="prose max-w-none">
+        <div id="analysis-content" class="text-gray-900 leading-relaxed">
+          <%= simple_format(@scam_check.analysis) %>
+        </div>
+      </div>
+      
+      <!-- Add More Details Button (shown when analysis needs more info) -->
+      <div id="add-details-section" class="hidden mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3 flex-1">
+            <h3 class="text-sm font-medium text-yellow-800">Need More Information</h3>
+            <p class="mt-1 text-sm text-yellow-700">
+              Our AI needs more details to provide a complete analysis. Click below to add additional information.
+            </p>
+            <button id="add-details-btn" class="mt-3 bg-[#3423A6] hover:bg-[#2a1c85] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              Add More Details
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const analysisContent = document.getElementById('analysis-content');
+          const addDetailsSection = document.getElementById('add-details-section');
+          const addDetailsBtn = document.getElementById('add-details-btn');
+          
+          if (analysisContent) {
+            let html = analysisContent.innerHTML;
+            
+            // Check if analysis indicates need for more information
+            const needsMoreInfo = html.toLowerCase().includes('need more') || 
+                                html.toLowerCase().includes('more information') ||
+                                html.toLowerCase().includes('more details') ||
+                                html.toLowerCase().includes('provide more') ||
+                                html.toLowerCase().includes('additional information') ||
+                                html.toLowerCase().includes('cannot provide') ||
+                                html.toLowerCase().includes('unable to provide') ||
+                                html.toLowerCase().includes('would need more') ||
+                                html.toLowerCase().includes('please provide');
+            
+            if (needsMoreInfo && addDetailsSection) {
+              addDetailsSection.classList.remove('hidden');
+            }
+            
+            // First, bold accuracy ratings (do this before other replacements)
+            html = html.replace(
+              /(accuracy\s+rating:\s*)(\d+%?)/gi,
+              '$1<strong class="text-lg font-bold">$2</strong>'
+            );
+            
+            // Also bold text-based accuracy ratings like "High", "Medium", "Low"
+            html = html.replace(
+              /(accuracy\s+rating:\s*)(high|medium|low)/gi,
+              '$1<strong class="text-lg font-bold">$2</strong>'
+            );
+            
+            html = html.replace(
+              /(confidence\s+level:\s*)(\d+%?)/gi,
+              '$1<strong class="text-lg font-bold">$2</strong>'
+            );
+            
+            html = html.replace(
+              /(reliability\s+score:\s*)(\d+%?)/gi,
+              '$1<strong class="text-lg font-bold">$2</strong>'
+            );
+            
+            // Find the Opinion section and highlight it - handle multiple formats
+            let opinionMatch = html.match(/(<p><strong>OPINION:<\/strong><\/p>)(.*?)(<p><strong>REASONS:<\/strong><\/p>)/s);
+            
+            if (!opinionMatch) {
+              // Try with lowercase
+              opinionMatch = html.match(/(<p><strong>Opinion:<\/strong><\/p>)(.*?)(<p><strong>Reasons:<\/strong><\/p>)/s);
+            }
+            
+            if (!opinionMatch) {
+              // Try without HTML tags
+              opinionMatch = html.match(/(OPINION:.*?)(REASONS:)/s);
+            }
+            
+            if (!opinionMatch) {
+              // Try lowercase without HTML tags
+              opinionMatch = html.match(/(Opinion:.*?)(Reasons:)/s);
+            }
+            
+            if (opinionMatch) {
+              let opinionContent;
+              let reasonsHeader;
+              
+              if (opinionMatch[1].includes('<p>')) {
+                // HTML format
+                const opinionHeader = opinionMatch[1];
+                opinionContent = opinionMatch[2];
+                reasonsHeader = opinionMatch[3];
+                
+                // Highlight scam likelihood with colors (only in Opinion section)
+                opinionContent = opinionContent.replace(
+                  /(likely\s+scam|high\s+risk|definitely\s+a\s+scam|scam\s+indicator|suspicious)/gi,
+                  '<span class="bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">$1</span>'
+                );
+                
+                opinionContent = opinionContent.replace(
+                  /(not\s+a\s+scam|legitimate|safe|low\s+risk|genuine)/gi,
+                  '<span class="bg-green-100 text-green-800 px-2 py-1 rounded font-semibold">$1</span>'
+                );
+                
+                // Replace the original Opinion section with the highlighted version
+                html = html.replace(opinionMatch[0], opinionHeader + opinionContent + reasonsHeader);
+              } else {
+                // Plain text format
+                opinionContent = opinionMatch[1];
+                reasonsHeader = opinionMatch[2];
+                
+                // Highlight scam likelihood with colors
+                opinionContent = opinionContent.replace(
+                  /(likely\s+scam|high\s+risk|definitely\s+a\s+scam|scam\s+indicator|suspicious)/gi,
+                  '<span class="bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">$1</span>'
+                );
+                
+                opinionContent = opinionContent.replace(
+                  /(not\s+a\s+scam|legitimate|safe|low\s+risk|genuine)/gi,
+                  '<span class="bg-green-100 text-green-800 px-2 py-1 rounded font-semibold">$1</span>'
+                );
+                
+                html = html.replace(opinionMatch[0], opinionContent + reasonsHeader);
+              }
+            }
+            
+            analysisContent.innerHTML = html;
+          }
+          
+          // Handle Add More Details button click
+          if (addDetailsBtn) {
+            addDetailsBtn.addEventListener('click', function() {
+              showAddDetailsDialog();
+            });
+          }
+        });
+      </script>
+    <% else %>
+      <div class="text-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3423A6] mx-auto mb-4"></div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Analysis in Progress</h3>
+        <p class="text-gray-600">Our AI security specialist is analyzing your submission. This usually takes a few moments.</p>
+        <p class="text-sm text-gray-500 mt-2">You can refresh this page to check for updates.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Add Details Dialog -->
+<div id="add-details-dialog" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Add More Details</h3>
+        <button id="close-dialog" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="add-details-form" action="/scam_check/<%= @scam_check.id %>/update_details" method="post" class="space-y-4">
+        <%= csrf_meta_tags %>
+        <input type="hidden" name="_method" value="patch">
+        
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Additional Details</label>
+          <textarea name="additional_details" rows="6" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3423A6] focus:outline-none resize-vertical text-base" placeholder="Please provide any additional information that might help with the analysis..."></textarea>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Additional Email Addresses (optional)</label>
+          <input type="email" name="additional_emails" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3423A6] focus:outline-none" placeholder="email1@example.com, email2@example.com">
+          <p class="text-xs text-gray-500 mt-1">Separate multiple emails with commas</p>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Additional URLs (optional)</label>
+          <input type="url" name="additional_urls" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3423A6] focus:outline-none" placeholder="https://example.com">
+          <p class="text-xs text-gray-500 mt-1">Separate multiple URLs with commas</p>
+        </div>
+        
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" id="cancel-dialog" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-[#3423A6] hover:bg-[#2a1c85] text-white rounded-lg transition-colors">
+            Submit Additional Details
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function showAddDetailsDialog() {
+  const dialog = document.getElementById('add-details-dialog');
+  dialog.classList.remove('hidden');
+  
+  // Close dialog when clicking outside
+  dialog.addEventListener('click', function(e) {
+    if (e.target === dialog) {
+      hideAddDetailsDialog();
+    }
+  });
+  
+  // Close dialog with close button
+  document.getElementById('close-dialog').addEventListener('click', hideAddDetailsDialog);
+  document.getElementById('cancel-dialog').addEventListener('click', hideAddDetailsDialog);
+  
+  // Handle form submission
+  document.getElementById('add-details-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+    
+    fetch(this.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        hideAddDetailsDialog();
+        // Show success message and reload page after a short delay
+        showNotification('Additional details submitted successfully. Re-analyzing...', 'success');
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      } else {
+        showNotification('Error submitting details. Please try again.', 'error');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error submitting details. Please try again.', 'error');
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    });
+  });
+}
+
+function hideAddDetailsDialog() {
+  const dialog = document.getElementById('add-details-dialog');
+  dialog.classList.add('hidden');
+}
+
+function showNotification(message, type) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+    type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+  }`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Remove notification after 5 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
+}
+</script>
+
+<% if @scam_check.analysis.blank? %>
+  <script>
+    // Auto-refresh every 5 seconds if analysis is not ready
+    setTimeout(function() {
+      location.reload();
+    }, 5000);
+  </script>
+<% end %> 
