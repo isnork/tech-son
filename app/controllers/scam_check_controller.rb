@@ -19,6 +19,7 @@ class ScamCheckController < ApplicationController
 
   def show
     @scam_check = ScamCheck.find(params[:id])
+    @scam_checks = ScamCheck.order(created_at: :desc).limit(10)
   end
 
   def update_details
