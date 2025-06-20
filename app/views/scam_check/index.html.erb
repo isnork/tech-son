@@ -163,5 +163,14 @@ document.addEventListener('DOMContentLoaded', function() {
       urlTooltip.classList.add('hidden');
     }
   });
+
+  // Auto-prepend https:// to URL field
+  const urlInput = document.querySelector('input[name="url"]');
+  urlInput.addEventListener('blur', function() {
+    let url = this.value.trim();
+    if (url && !url.match(/^https?:\/\//)) {
+      this.value = 'https://' + url;
+    }
+  });
 });
 </script>

@@ -70,9 +70,10 @@
           </div>
           <div class="ml-3 flex-1">
             <h3 class="text-sm font-medium text-yellow-800">Need More Information</h3>
-            <p class="mt-1 text-sm text-yellow-700">
-              Our AI needs more details to provide a complete analysis. Click below to add additional information.
-            </p>
+            <div id="more-info-details" class="mt-1 text-sm text-yellow-700">
+              <p>Our AI needs more details to provide a complete analysis. Here's what you can add to help:</p>
+              <!-- Suggestions will be inserted here by JavaScript -->
+            </div>
             <button id="add-details-btn" class="mt-3 bg-[#3423A6] hover:bg-[#2a1c85] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
               Add More Details
             </button>
@@ -84,24 +85,58 @@
         document.addEventListener('DOMContentLoaded', function() {
           const analysisContent = document.getElementById('analysis-content');
           const addDetailsSection = document.getElementById('add-details-section');
+          const moreInfoDetails = document.getElementById('more-info-details');
           const addDetailsBtn = document.getElementById('add-details-btn');
           
           if (analysisContent) {
             let html = analysisContent.innerHTML;
             
-            // Check if analysis indicates need for more information
-            const needsMoreInfo = html.toLowerCase().includes('need more') || 
-                                html.toLowerCase().includes('more information') ||
-                                html.toLowerCase().includes('more details') ||
-                                html.toLowerCase().includes('provide more') ||
-                                html.toLowerCase().includes('additional information') ||
-                                html.toLowerCase().includes('cannot provide') ||
-                                html.toLowerCase().includes('unable to provide') ||
-                                html.toLowerCase().includes('would need more') ||
-                                html.toLowerCase().includes('please provide');
+            // Extract suggestions if they exist
+            const suggestionMatch = html.match(/\[SUGGESTIONS\]([\s\S]*?)\[\/SUGGESTIONS\]/);
             
-            if (needsMoreInfo && addDetailsSection) {
-              addDetailsSection.classList.remove('hidden');
+            if (suggestionMatch && suggestionMatch[1]) {
+              const suggestions = suggestionMatch[1].trim();
+              if (suggestions && addDetailsSection && moreInfoDetails) {
+                // Remove any leading/trailing whitespace and split by newlines
+                let lines = suggestions.split(/\n/)
+                  .map(s => s.trim())
+                  .filter(s => s && !/^[-*•]$/.test(s)); // Remove empty and lone bullet lines
+
+                // Remove duplicate lines
+                lines = [...new Set(lines)];
+
+                // Remove only bulleted prefixes (e.g., "- ", "* ", "• ") but keep numbers
+                const suggestionList = lines
+                  .map(s => s.replace(/^[-*•]\s*/, ''))
+                  .map(s => `<div>${s}</div>`)
+                  .join('');
+
+                moreInfoDetails.innerHTML = `
+                  <p class="font-semibold mb-2">To improve the analysis, please provide more details on the following:</p>
+                  <div>${suggestionList}</div>
+                `;
+                addDetailsSection.classList.remove('hidden');
+
+                // Optionally remove the suggestions from the main analysis text
+                html = html.replace(suggestionMatch[0], '');
+              }
+            } else {
+              // Fallback for older format
+              const needsMoreInfo = html.toLowerCase().includes('could you share additional details') ||
+                                  html.toLowerCase().includes('could you provide additional details') ||
+                                  html.toLowerCase().includes('to make this analysis more accurate') ||
+                                  html.toLowerCase().includes('additional details such as') ||
+                                  html.toLowerCase().includes('could you share more details') ||
+                                  html.toLowerCase().includes('could you provide more details') ||
+                                  html.toLowerCase().includes('cannot provide') ||
+                                  html.toLowerCase().includes('unable to provide') ||
+                                  html.toLowerCase().includes('unable to determine') ||
+                                  html.toLowerCase().includes('cannot determine') ||
+                                  html.toLowerCase().includes('need more context');
+              
+              if (needsMoreInfo && addDetailsSection) {
+                addDetailsSection.classList.remove('hidden');
+              }
             }
             
             // First, bold accuracy ratings (do this before other replacements)
@@ -127,15 +162,25 @@
             );
             
             // Find the Opinion section and highlight it - handle multiple formats
-            let opinionMatch = html.match(/(<p><strong>OPINION:<\/strong><\/p>)(.*?)(<p><strong>REASONS:<\/strong><\/p>)/s);
+            let opinionMatch = html.match(/(OPINION:\s*)(.*?)(ACCURACY RATING:)/s);
             
             if (!opinionMatch) {
               // Try with lowercase
+              opinionMatch = html.match(/(Opinion:\s*)(.*?)(Accuracy Rating:)/s);
+            }
+            
+            if (!opinionMatch) {
+              // Try with HTML tags
+              opinionMatch = html.match(/(<p><strong>OPINION:<\/strong><\/p>)(.*?)(<p><strong>REASONS:<\/strong><\/p>)/s);
+            }
+            
+            if (!opinionMatch) {
+              // Try with lowercase HTML tags
               opinionMatch = html.match(/(<p><strong>Opinion:<\/strong><\/p>)(.*?)(<p><strong>Reasons:<\/strong><\/p>)/s);
             }
             
             if (!opinionMatch) {
-              // Try without HTML tags
+              // Try without HTML tags, different section
               opinionMatch = html.match(/(OPINION:.*?)(REASONS:)/s);
             }
             
@@ -146,17 +191,17 @@
             
             if (opinionMatch) {
               let opinionContent;
-              let reasonsHeader;
+              let nextSection;
               
               if (opinionMatch[1].includes('<p>')) {
                 // HTML format
                 const opinionHeader = opinionMatch[1];
                 opinionContent = opinionMatch[2];
-                reasonsHeader = opinionMatch[3];
+                nextSection = opinionMatch[3];
                 
                 // Highlight scam likelihood with colors (only in Opinion section)
                 opinionContent = opinionContent.replace(
-                  /(likely\s+scam|high\s+risk|definitely\s+a\s+scam|scam\s+indicator|suspicious)/gi,
+                  /(likely\s+scam|high\s+risk|definitely\s+a\s+scam|scam\s+indicator|suspicious|possible\s+scam)/gi,
                   '<span class="bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">$1</span>'
                 );
                 
@@ -166,15 +211,15 @@
                 );
                 
                 // Replace the original Opinion section with the highlighted version
-                html = html.replace(opinionMatch[0], opinionHeader + opinionContent + reasonsHeader);
+                html = html.replace(opinionMatch[0], opinionHeader + opinionContent + nextSection);
               } else {
                 // Plain text format
-                opinionContent = opinionMatch[1];
-                reasonsHeader = opinionMatch[2];
+                opinionContent = opinionMatch[2] || opinionMatch[1];
+                nextSection = opinionMatch[3] || opinionMatch[2];
                 
                 // Highlight scam likelihood with colors
                 opinionContent = opinionContent.replace(
-                  /(likely\s+scam|high\s+risk|definitely\s+a\s+scam|scam\s+indicator|suspicious)/gi,
+                  /(likely\s+scam|high\s+risk|definitely\s+a\s+scam|scam\s+indicator|suspicious|possible\s+scam)/gi,
                   '<span class="bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">$1</span>'
                 );
                 
@@ -183,7 +228,9 @@
                   '<span class="bg-green-100 text-green-800 px-2 py-1 rounded font-semibold">$1</span>'
                 );
                 
-                html = html.replace(opinionMatch[0], opinionContent + reasonsHeader);
+                // Reconstruct the section with highlighting
+                const opinionHeader = opinionMatch[1];
+                html = html.replace(opinionMatch[0], opinionHeader + opinionContent + nextSection);
               }
             }
             
