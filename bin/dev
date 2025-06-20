@@ -1,12 +1,17 @@
 #!/usr/bin/env sh
 
+# Stop any lingering server process
+if [ -f tmp/pids/server.pid ]; then
+  echo "Stale server process found. Stopping it..."
+  kill -9 $(cat tmp/pids/server.pid) &> /dev/null
+  rm -f tmp/pids/server.pid
+  echo "Stopped."
+fi
+
 if ! gem list foreman -i --silent; then
   echo "Installing foreman..."
   gem install foreman
 fi
-
-# Remove stale server PID file
-rm -f tmp/pids/server.pid
 
 # Ensure database is created and migrated
 bin/rails db:prepare
