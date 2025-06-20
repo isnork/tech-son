@@ -1,2 +1,48 @@
-<h1>Welcome to amibeingscammed</h1>
-<p>Your application is now running successfully!</p>
+<nav class="w-full flex items-center justify-between py-4 px-8 bg-white shadow-sm">
+  <div class="text-2xl font-bold text-[#1A1A1A]">amibeingscammed</div>
+  <div>
+    <a href="#features" class="text-[#1A1A1A] hover:text-[#4F46E5] font-medium mx-4">Features</a>
+    <a href="#about" class="text-[#1A1A1A] hover:text-[#4F46E5] font-medium mx-4">About</a>
+    <a href="#contact" class="text-[#1A1A1A] hover:text-[#4F46E5] font-medium mx-4">Contact</a>
+  </div>
+</nav>
+
+<main class="flex flex-col items-center justify-center min-h-[80vh] bg-[#F5F6FA] px-4">
+  <h1 class="text-4xl md:text-6xl font-extrabold text-[#1A1A1A] mb-6 text-center">AI Scam Detection for Everyone</h1>
+  <p class="text-lg md:text-2xl text-[#4F46E5] mb-8 text-center max-w-2xl">Instantly analyze suspicious messages, emails, and websites with AI-powered scam detection. Stay safe online with actionable insights and peace of mind.</p>
+  <%= link_to "Get Started", scam_check_index_path, class: "px-8 py-4 bg-[#4F46E5] text-white rounded-lg text-xl font-semibold shadow-lg hover:bg-[#3423A6] transition-colors duration-200" %>
+</main>
+
+<section id="features" class="py-16 bg-white">
+  <div class="max-w-4xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-[#1A1A1A] mb-6 text-center">Features</h2>
+    <ul class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <li class="bg-[#F5F6FA] p-6 rounded-lg shadow text-center">
+        <span class="text-2xl font-bold text-[#4F46E5]">1</span>
+        <p class="mt-2 text-[#1A1A1A]">Analyze suspicious links, emails, and messages</p>
+      </li>
+      <li class="bg-[#F5F6FA] p-6 rounded-lg shadow text-center">
+        <span class="text-2xl font-bold text-[#4F46E5]">2</span>
+        <p class="mt-2 text-[#1A1A1A]">Get instant, actionable AI feedback</p>
+      </li>
+      <li class="bg-[#F5F6FA] p-6 rounded-lg shadow text-center">
+        <span class="text-2xl font-bold text-[#4F46E5]">3</span>
+        <p class="mt-2 text-[#1A1A1A]">Stay safe and informed online</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="about" class="py-16 bg-[#F5F6FA]">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold text-[#1A1A1A] mb-6">About</h2>
+    <p class="text-lg text-[#4F46E5]">amibeingscammed is dedicated to helping everyone stay safe from online scams. Our AI analyzes suspicious content and provides clear, actionable advice.</p>
+  </div>
+</section>
+
+<section id="contact" class="py-16 bg-white">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold text-[#1A1A1A] mb-6">Contact</h2>
+    <p class="text-lg text-[#4F46E5]">Questions? Email us at <a href="mailto:support@amibeingscammed.com" class="underline hover:text-[#1A1A1A]">support@amibeingscammed.com</a></p>
+  </div>
+</section>

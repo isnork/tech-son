@@ -54,10 +54,8 @@
     </div>
 
     <% if @scam_check.analysis.present? %>
-      <div class="prose max-w-none">
-        <div id="analysis-content" class="text-gray-900 leading-relaxed">
-          <%= simple_format(@scam_check.analysis) %>
-        </div>
+      <div class="prose max-w-none mt-6" id="analysis-output">
+        <%= simple_format(@scam_check.analysis, {}, sanitize: false).html_safe %>
       </div>
       
       <!-- Add More Details Button (shown when analysis needs more info) -->
@@ -83,7 +81,7 @@
       
       <script>
         document.addEventListener('DOMContentLoaded', function() {
-          const analysisContent = document.getElementById('analysis-content');
+          const analysisContent = document.getElementById('analysis-output');
           const addDetailsSection = document.getElementById('add-details-section');
           const moreInfoDetails = document.getElementById('more-info-details');
           const addDetailsBtn = document.getElementById('add-details-btn');
