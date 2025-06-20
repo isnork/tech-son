@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
+  # Scam check routes
   get "scam_check/index"
-  get "scam_check/create"
+  post "scam_check/create"
+  
+  # Home route
   get "home/index"
+  
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
