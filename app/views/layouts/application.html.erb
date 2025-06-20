@@ -23,8 +23,54 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+    <div class="flex min-h-screen">
+      <!-- Sidebar for History -->
+      <div class="w-80 bg-gray-50 border-r border-gray-200 p-6">
+        <h2 class="text-xl font-bold text-[#3423A6] mb-4">Your History</h2>
+        <% if @scam_checks&.any? %>
+          <div class="space-y-3">
+            <% @scam_checks.each do |check| %>
+              <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <p class="text-sm text-gray-600 mb-1">
+                      <%= check.created_at.strftime("%b %d, %Y") %>
+                    </p>
+                    <p class="text-sm font-medium text-gray-900 line-clamp-2">
+                      <%= truncate(check.description, length: 100) %>
+                    </p>
+                    <% if check.email.present? %>
+                      <p class="text-xs text-gray-500 mt-1">
+                        From: <%= check.email %>
+                      </p>
+                    <% end %>
+                    <% if check.url.present? %>
+                      <p class="text-xs text-gray-500 mt-1">
+                        URL: <%= truncate(check.url, length: 30) %>
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-8">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-gray-500 text-sm">No previous checks yet</p>
+            <p class="text-gray-400 text-xs mt-1">Your scam check history will appear here</p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1">
+        <main class="container mx-auto mt-28 px-5">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
   </body>
 </html>

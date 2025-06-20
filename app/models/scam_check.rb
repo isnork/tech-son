@@ -1,0 +1,2 @@
+class ScamCheck < ApplicationRecord
+end
