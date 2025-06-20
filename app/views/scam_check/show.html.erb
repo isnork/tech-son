@@ -37,7 +37,7 @@
       
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-2">Submitted</label>
-        <p class="text-gray-900"><%= @scam_check.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <p class="text-gray-900"><%= l @scam_check.created_at, format: :long %></p>
       </div>
     </div>
   </div>

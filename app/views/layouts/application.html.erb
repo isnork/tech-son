@@ -20,6 +20,15 @@
     <%# Include Tailwind CSS %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <script>
+      (function() {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (timezone) {
+          document.cookie = "timezone=" + timezone + ";path=/";
+        }
+      })();
+    </script>
   </head>
 
   <body>
@@ -53,7 +62,7 @@
                     <div class="flex-1">
                       <div class="flex items-center justify-between mb-2">
                         <p class="text-sm text-gray-600">
-                          <%= check.created_at.strftime("%b %d, %Y") %>
+                          <%= time_ago_in_words(check.created_at) %> ago
                         </p>
                         <% if check.analysis.present? %>
                           <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
