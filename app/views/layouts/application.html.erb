@@ -192,7 +192,7 @@
 
     <script>
       // Cache-busting version
-      const JS_VERSION = '1.0.4';
+      const JS_VERSION = '1.0.5';
       console.log('History button JavaScript loaded, version:', JS_VERSION);
       
       // Function to initialize history button
@@ -225,13 +225,13 @@
           if (isOpen) {
             // Close sidebar
             historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('translate-x-full');
+            historySidebar.classList.add('-translate-x-full');
             toggleIcon.classList.remove('rotate-180');
             if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
             mainContent.classList.remove('ml-80');
           } else {
             // Open sidebar
-            historySidebar.classList.remove('translate-x-full');
+            historySidebar.classList.remove('-translate-x-full');
             historySidebar.classList.add('translate-x-0');
             toggleIcon.classList.add('rotate-180');
             if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
@@ -247,7 +247,7 @@
             console.log('Close button clicked');
             
             historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('translate-x-full');
+            historySidebar.classList.add('-translate-x-full');
             toggleIcon.classList.remove('rotate-180');
             if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
             mainContent.classList.remove('ml-80');
@@ -262,7 +262,7 @@
             console.log('Overlay clicked');
             
             historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('translate-x-full');
+            historySidebar.classList.add('-translate-x-full');
             toggleIcon.classList.remove('rotate-180');
             sidebarOverlay.classList.add('hidden');
             mainContent.classList.remove('ml-80');
@@ -313,6 +313,9 @@
       
       // Run initialization after a short delay to ensure all elements are loaded
       setTimeout(initializeHistoryButton, 500);
+      
+      // Run initialization again after a longer delay for Heroku
+      setTimeout(initializeHistoryButton, 2000);
 
       // Global function for toggling analysis
       function toggleAnalysis(checkId) {
