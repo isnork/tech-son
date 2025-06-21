@@ -191,131 +191,107 @@
     </div>
 
     <script>
-      // Cache-busting version
-      const JS_VERSION = '1.0.5';
-      console.log('History button JavaScript loaded, version:', JS_VERSION);
+      // Simple, robust history button implementation for Heroku
+      console.log('History button script loaded');
       
-      // Function to initialize history button
-      function initializeHistoryButton() {
-        console.log('Initializing history button...');
-        
-        const historyToggle = document.getElementById('history-toggle');
-        const historySidebar = document.getElementById('history-sidebar');
-        const closeSidebar = document.getElementById('close-sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
+      // Function to toggle history sidebar
+      function toggleHistorySidebar() {
+        console.log('Toggle history sidebar called');
+        const sidebar = document.getElementById('history-sidebar');
         const toggleIcon = document.getElementById('toggle-icon');
         const mainContent = document.getElementById('main-content');
         
-        // Only proceed if we have the necessary elements (history button exists)
-        if (!historyToggle || !historySidebar || !toggleIcon || !mainContent) {
-          console.log('History button elements not found, skipping initialization');
-          return;
-        }
-        
-        console.log('History button elements found, setting up event listeners');
-        
-        // Toggle sidebar
-        historyToggle.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('History button clicked');
-          
-          const isOpen = historySidebar.classList.contains('translate-x-0');
+        if (sidebar && toggleIcon && mainContent) {
+          const isOpen = sidebar.classList.contains('translate-x-0');
           
           if (isOpen) {
             // Close sidebar
-            historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            sidebar.classList.add('-translate-x-full');
             toggleIcon.classList.remove('rotate-180');
-            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
-            mainContent.classList.remove('ml-80');
+            mainContent.classList.remove('mr-80');
           } else {
             // Open sidebar
-            historySidebar.classList.remove('-translate-x-full');
-            historySidebar.classList.add('translate-x-0');
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
             toggleIcon.classList.add('rotate-180');
-            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
-            mainContent.classList.add('ml-80');
+            mainContent.classList.add('mr-80');
           }
-        });
+          
+          console.log('Sidebar toggled, isOpen:', !isOpen);
+        } else {
+          console.log('Required elements not found:', {
+            sidebar: !!sidebar,
+            toggleIcon: !!toggleIcon,
+            mainContent: !!mainContent
+          });
+        }
+      }
+      
+      // Function to close history sidebar
+      function closeHistorySidebar() {
+        console.log('Close history sidebar called');
+        const sidebar = document.getElementById('history-sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        const mainContent = document.getElementById('main-content');
         
-        // Close sidebar when clicking close button
+        if (sidebar && toggleIcon && mainContent) {
+          sidebar.classList.remove('translate-x-0');
+          sidebar.classList.add('-translate-x-full');
+          toggleIcon.classList.remove('rotate-180');
+          mainContent.classList.remove('mr-80');
+          console.log('Sidebar closed');
+        }
+      }
+      
+      // Initialize when DOM is ready
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM ready, setting up history button');
+        
+        const historyToggle = document.getElementById('history-toggle');
+        const closeSidebar = document.getElementById('close-sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        // Set up toggle button
+        if (historyToggle) {
+          historyToggle.onclick = toggleHistorySidebar;
+          console.log('History toggle button configured');
+        } else {
+          console.log('History toggle button not found');
+        }
+        
+        // Set up close button
         if (closeSidebar) {
-          closeSidebar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Close button clicked');
-            
-            historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('-translate-x-full');
-            toggleIcon.classList.remove('rotate-180');
-            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
-            mainContent.classList.remove('ml-80');
-          });
+          closeSidebar.onclick = closeHistorySidebar;
+          console.log('Close button configured');
         }
         
-        // Close sidebar when clicking overlay
+        // Set up overlay click
         if (sidebarOverlay) {
-          sidebarOverlay.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Overlay clicked');
-            
-            historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('-translate-x-full');
-            toggleIcon.classList.remove('rotate-180');
-            sidebarOverlay.classList.add('hidden');
-            mainContent.classList.remove('ml-80');
-          });
+          sidebarOverlay.onclick = closeHistorySidebar;
+          console.log('Overlay click configured');
         }
         
-        // Auto-refresh history content
-        function refreshHistoryContent() {
-          const historyContent = document.getElementById('history-content');
-          if (historyContent) {
-            fetch('/scam_check')
-              .then(response => response.text())
-              .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newHistoryContent = doc.getElementById('history-content');
-                if (newHistoryContent) {
-                  historyContent.innerHTML = newHistoryContent.innerHTML;
-                }
-              })
-              .catch(error => {
-                console.error('Error refreshing history:', error);
-              });
+        // Also try to set up after a delay for Heroku
+        setTimeout(function() {
+          console.log('Delayed setup for Heroku');
+          const historyToggle = document.getElementById('history-toggle');
+          if (historyToggle && !historyToggle.onclick) {
+            historyToggle.onclick = toggleHistorySidebar;
+            console.log('History toggle button configured (delayed)');
           }
-        }
-        
-        // Refresh history every 30 seconds
-        setInterval(refreshHistoryContent, 30000);
-        
-        console.log('History button initialization complete');
-      }
-      
-      // Run initialization when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeHistoryButton);
-      } else {
-        // DOM is already loaded
-        initializeHistoryButton();
-      }
-      
-      // Also run initialization when the page becomes visible (for navigation)
-      document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-          console.log('Page became visible, re-initializing history button');
-          setTimeout(initializeHistoryButton, 100);
-        }
+        }, 1000);
       });
       
-      // Run initialization after a short delay to ensure all elements are loaded
-      setTimeout(initializeHistoryButton, 500);
-      
-      // Run initialization again after a longer delay for Heroku
-      setTimeout(initializeHistoryButton, 2000);
+      // Also try to set up immediately if DOM is already loaded
+      if (document.readyState !== 'loading') {
+        console.log('DOM already loaded, setting up immediately');
+        const historyToggle = document.getElementById('history-toggle');
+        if (historyToggle) {
+          historyToggle.onclick = toggleHistorySidebar;
+          console.log('History toggle button configured (immediate)');
+        }
+      }
 
       // Global function for toggling analysis
       function toggleAnalysis(checkId) {
