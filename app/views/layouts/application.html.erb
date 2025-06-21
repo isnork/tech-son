@@ -191,7 +191,13 @@
     </div>
 
     <script>
+      // Cache-busting version
+      const JS_VERSION = '1.0.1';
+      console.log('History button JavaScript loaded, version:', JS_VERSION);
+      
       document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded - initializing history button');
+        
         const historyToggle = document.getElementById('history-toggle');
         const historySidebar = document.getElementById('history-sidebar');
         const closeSidebar = document.getElementById('close-sidebar');
@@ -199,10 +205,22 @@
         const toggleIcon = document.getElementById('toggle-icon');
         const mainContent = document.getElementById('main-content');
         
+        console.log('Elements found:', {
+          historyToggle: !!historyToggle,
+          historySidebar: !!historySidebar,
+          closeSidebar: !!closeSidebar,
+          sidebarOverlay: !!sidebarOverlay,
+          toggleIcon: !!toggleIcon,
+          mainContent: !!mainContent
+        });
+        
         // Only proceed if we have the necessary elements (history button exists)
         if (!historyToggle || !historySidebar || !toggleIcon || !mainContent) {
+          console.log('Missing required elements, skipping history button initialization');
           return;
         }
+        
+        console.log('History button initialization successful');
         
         // Check if sidebar was previously opened
         const sidebarOpened = localStorage.getItem('history-sidebar-closed') === 'false';
@@ -224,6 +242,7 @@
         
         // Toggle sidebar function
         function toggleSidebar() {
+          console.log('Toggle sidebar clicked');
           const isOpen = historySidebar.classList.contains('translate-x-0');
           
           if (isOpen) {
@@ -253,6 +272,7 @@
         
         // Event listeners
         historyToggle.addEventListener('click', toggleSidebar);
+        console.log('Event listener added to history toggle button');
         
         if (closeSidebar) {
           closeSidebar.addEventListener('click', function() {
