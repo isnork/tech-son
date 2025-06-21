@@ -199,6 +199,11 @@
         const toggleIcon = document.getElementById('toggle-icon');
         const mainContent = document.getElementById('main-content');
         
+        // Only proceed if we have the necessary elements (history button exists)
+        if (!historyToggle || !historySidebar || !toggleIcon || !mainContent) {
+          return;
+        }
+        
         // Check if sidebar was previously opened
         const sidebarOpened = localStorage.getItem('history-sidebar-closed') === 'false';
         
@@ -228,7 +233,9 @@
             toggleIcon.style.transform = 'rotate(180deg)';
             mainContent.classList.remove('ml-80');
             mainContent.classList.add('ml-0');
-            sidebarOverlay.classList.add('hidden');
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.add('hidden');
+            }
             localStorage.setItem('history-sidebar-closed', 'true');
           } else {
             // Open sidebar
@@ -237,7 +244,7 @@
             toggleIcon.style.transform = 'rotate(0deg)';
             mainContent.classList.remove('ml-0');
             mainContent.classList.add('ml-80');
-            if (window.innerWidth < 1024) {
+            if (window.innerWidth < 1024 && sidebarOverlay) {
               sidebarOverlay.classList.remove('hidden');
             }
             localStorage.setItem('history-sidebar-closed', 'false');
@@ -247,37 +254,47 @@
         // Event listeners
         historyToggle.addEventListener('click', toggleSidebar);
         
-        closeSidebar.addEventListener('click', function() {
-          historySidebar.classList.remove('translate-x-0');
-          historySidebar.classList.add('-translate-x-full');
-          toggleIcon.style.transform = 'rotate(180deg)';
-          mainContent.classList.remove('ml-80');
-          mainContent.classList.add('ml-0');
-          sidebarOverlay.classList.add('hidden');
-          localStorage.setItem('history-sidebar-closed', 'true');
-        });
+        if (closeSidebar) {
+          closeSidebar.addEventListener('click', function() {
+            historySidebar.classList.remove('translate-x-0');
+            historySidebar.classList.add('-translate-x-full');
+            toggleIcon.style.transform = 'rotate(180deg)';
+            mainContent.classList.remove('ml-80');
+            mainContent.classList.add('ml-0');
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.add('hidden');
+            }
+            localStorage.setItem('history-sidebar-closed', 'true');
+          });
+        }
         
-        sidebarOverlay.addEventListener('click', function() {
-          historySidebar.classList.remove('translate-x-0');
-          historySidebar.classList.add('-translate-x-full');
-          toggleIcon.style.transform = 'rotate(180deg)';
-          mainContent.classList.remove('ml-80');
-          mainContent.classList.add('ml-0');
-          sidebarOverlay.classList.add('hidden');
-          localStorage.setItem('history-sidebar-closed', 'true');
-        });
+        if (sidebarOverlay) {
+          sidebarOverlay.addEventListener('click', function() {
+            historySidebar.classList.remove('translate-x-0');
+            historySidebar.classList.add('-translate-x-full');
+            toggleIcon.style.transform = 'rotate(180deg)';
+            mainContent.classList.remove('ml-80');
+            mainContent.classList.add('ml-0');
+            sidebarOverlay.classList.add('hidden');
+            localStorage.setItem('history-sidebar-closed', 'true');
+          });
+        }
         
         // Handle window resize
         window.addEventListener('resize', function() {
           if (window.innerWidth >= 1024) { // lg breakpoint
-            sidebarOverlay.classList.add('hidden');
+            if (sidebarOverlay) {
+              sidebarOverlay.classList.add('hidden');
+            }
             if (historySidebar.classList.contains('translate-x-0')) {
               mainContent.classList.add('ml-80');
               mainContent.classList.remove('ml-0');
             }
           } else {
             if (historySidebar.classList.contains('translate-x-0')) {
-              sidebarOverlay.classList.remove('hidden');
+              if (sidebarOverlay) {
+                sidebarOverlay.classList.remove('hidden');
+              }
               mainContent.classList.remove('ml-80');
               mainContent.classList.add('ml-0');
             }
@@ -308,9 +325,15 @@
                   if (!isOpen) {
                     currentSidebar.classList.remove('translate-x-0');
                     currentSidebar.classList.add('-translate-x-full');
-                    document.getElementById('toggle-icon').style.transform = 'rotate(180deg)';
-                    document.getElementById('main-content').classList.remove('ml-80');
-                    document.getElementById('main-content').classList.add('ml-0');
+                    const toggleIcon = document.getElementById('toggle-icon');
+                    if (toggleIcon) {
+                      toggleIcon.style.transform = 'rotate(180deg)';
+                    }
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                      mainContent.classList.remove('ml-80');
+                      mainContent.classList.add('ml-0');
+                    }
                   }
                   
                   // Check if we still have analyzing items and continue refreshing if needed
@@ -333,14 +356,16 @@
         const toggleText = document.getElementById(`toggle-text-${checkId}`);
         const toggleIcon = document.getElementById(`toggle-icon-${checkId}`);
         
-        if (analysisDiv.classList.contains('hidden')) {
-          analysisDiv.classList.remove('hidden');
-          toggleText.textContent = 'Hide Analysis';
-          toggleIcon.style.transform = 'rotate(180deg)';
-        } else {
-          analysisDiv.classList.add('hidden');
-          toggleText.textContent = 'View Analysis';
-          toggleIcon.style.transform = 'rotate(0deg)';
+        if (analysisDiv && toggleText && toggleIcon) {
+          if (analysisDiv.classList.contains('hidden')) {
+            analysisDiv.classList.remove('hidden');
+            toggleText.textContent = 'Hide Analysis';
+            toggleIcon.style.transform = 'rotate(180deg)';
+          } else {
+            analysisDiv.classList.add('hidden');
+            toggleText.textContent = 'View Analysis';
+            toggleIcon.style.transform = 'rotate(0deg)';
+          }
         }
       }
 
@@ -351,20 +376,22 @@
         const toggleText = document.getElementById(`toggle-text-${checkId}`);
         const toggleIcon = document.getElementById(`toggle-icon-${checkId}`);
         
-        if (collapsedView.classList.contains('collapsed-view')) {
-          collapsedView.classList.remove('collapsed-view');
-          collapsedView.classList.add('hidden');
-          expandedView.classList.remove('hidden');
-          expandedView.classList.add('expanded-view');
-          toggleText.textContent = 'Hide Details';
-          toggleIcon.style.transform = 'rotate(180deg)';
-        } else {
-          collapsedView.classList.add('collapsed-view');
-          collapsedView.classList.remove('hidden');
-          expandedView.classList.add('hidden');
-          expandedView.classList.remove('expanded-view');
-          toggleText.textContent = 'View Details';
-          toggleIcon.style.transform = 'rotate(0deg)';
+        if (collapsedView && expandedView && toggleText && toggleIcon) {
+          if (collapsedView.classList.contains('collapsed-view')) {
+            collapsedView.classList.remove('collapsed-view');
+            collapsedView.classList.add('hidden');
+            expandedView.classList.remove('hidden');
+            expandedView.classList.add('expanded-view');
+            toggleText.textContent = 'Hide Details';
+            toggleIcon.style.transform = 'rotate(180deg)';
+          } else {
+            collapsedView.classList.add('collapsed-view');
+            collapsedView.classList.remove('hidden');
+            expandedView.classList.add('hidden');
+            expandedView.classList.remove('expanded-view');
+            toggleText.textContent = 'View Details';
+            toggleIcon.style.transform = 'rotate(0deg)';
+          }
         }
       }
     </script>

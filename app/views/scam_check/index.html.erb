@@ -97,119 +97,122 @@
 </div>
 
 <script>
-// Initialize form functionality when the page loads
-function initializeFormFunctionality() {
-  const fileUpload = document.getElementById('file-upload');
-  const filePreview = document.getElementById('file-preview');
-  const fileName = document.getElementById('file-name');
-  const removeFile = document.getElementById('remove-file');
-  const dropZone = document.querySelector('label[for="file-upload"]');
+// Scam Check Form JavaScript - Namespaced to avoid conflicts
+(function() {
+  // Initialize form functionality when the page loads
+  function initializeFormFunctionality() {
+    const fileUpload = document.getElementById('file-upload');
+    const filePreview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    const removeFile = document.getElementById('remove-file');
+    const dropZone = document.querySelector('label[for="file-upload"]');
 
-  // Handle file selection
-  if (fileUpload) {
-    fileUpload.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        showFilePreview(file);
-      }
-    });
-  }
-
-  // Handle drag and drop
-  if (dropZone) {
-    dropZone.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      dropZone.classList.add('border-[#3423A6]', 'bg-[#3423A6]/5');
-    });
-
-    dropZone.addEventListener('dragleave', function(e) {
-      e.preventDefault();
-      dropZone.classList.remove('border-[#3423A6]', 'bg-[#3423A6]/5');
-    });
-
-    dropZone.addEventListener('drop', function(e) {
-      e.preventDefault();
-      dropZone.classList.remove('border-[#3423A6]', 'bg-[#3423A6]/5');
-      
-      const files = e.dataTransfer.files;
-      if (files.length > 0) {
-        const file = files[0];
-        if (file.type.startsWith('image/')) {
-          fileUpload.files = files;
+    // Handle file selection
+    if (fileUpload) {
+      fileUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
           showFilePreview(file);
-        } else {
-          alert('Please select an image file.');
         }
+      });
+    }
+
+    // Handle drag and drop
+    if (dropZone) {
+      dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('border-[#3423A6]', 'bg-[#3423A6]/5');
+      });
+
+      dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-[#3423A6]', 'bg-[#3423A6]/5');
+      });
+
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-[#3423A6]', 'bg-[#3423A6]/5');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          if (file.type.startsWith('image/')) {
+            fileUpload.files = files;
+            showFilePreview(file);
+          } else {
+            alert('Please select an image file.');
+          }
+        }
+      });
+    }
+
+    // Remove file
+    if (removeFile) {
+      removeFile.addEventListener('click', function() {
+        fileUpload.value = '';
+        filePreview.classList.add('hidden');
+      });
+    }
+
+    function showFilePreview(file) {
+      if (fileName && filePreview) {
+        fileName.textContent = file.name;
+        filePreview.classList.remove('hidden');
+      }
+    }
+
+    // Email tooltip functionality
+    const emailInfo = document.getElementById('email-info');
+    const emailTooltip = document.getElementById('email-tooltip');
+
+    if (emailInfo && emailTooltip) {
+      emailInfo.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        emailTooltip.classList.toggle('hidden');
+      });
+    }
+
+    // URL tooltip functionality
+    const urlInfo = document.getElementById('url-info');
+    const urlTooltip = document.getElementById('url-tooltip');
+
+    if (urlInfo && urlTooltip) {
+      urlInfo.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        urlTooltip.classList.toggle('hidden');
+      });
+    }
+
+    // Close tooltips when clicking outside
+    document.addEventListener('click', function(e) {
+      if (emailInfo && emailTooltip && !emailInfo.contains(e.target) && !emailTooltip.contains(e.target)) {
+        emailTooltip.classList.add('hidden');
+      }
+      if (urlInfo && urlTooltip && !urlInfo.contains(e.target) && !urlTooltip.contains(e.target)) {
+        urlTooltip.classList.add('hidden');
       }
     });
-  }
 
-  // Remove file
-  if (removeFile) {
-    removeFile.addEventListener('click', function() {
-      fileUpload.value = '';
-      filePreview.classList.add('hidden');
-    });
-  }
-
-  function showFilePreview(file) {
-    if (fileName && filePreview) {
-      fileName.textContent = file.name;
-      filePreview.classList.remove('hidden');
+    // Auto-prepend https:// to URL field
+    const urlInput = document.querySelector('input[name="url"]');
+    if (urlInput) {
+      urlInput.addEventListener('blur', function() {
+        let url = this.value.trim();
+        if (url && !url.match(/^https?:\/\//)) {
+          this.value = 'https://' + url;
+        }
+      });
     }
   }
 
-  // Email tooltip functionality
-  const emailInfo = document.getElementById('email-info');
-  const emailTooltip = document.getElementById('email-tooltip');
-
-  if (emailInfo && emailTooltip) {
-    emailInfo.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      emailTooltip.classList.toggle('hidden');
-    });
+  // Run initialization when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFormFunctionality);
+  } else {
+    // DOM is already loaded
+    initializeFormFunctionality();
   }
-
-  // URL tooltip functionality
-  const urlInfo = document.getElementById('url-info');
-  const urlTooltip = document.getElementById('url-tooltip');
-
-  if (urlInfo && urlTooltip) {
-    urlInfo.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      urlTooltip.classList.toggle('hidden');
-    });
-  }
-
-  // Close tooltips when clicking outside
-  document.addEventListener('click', function(e) {
-    if (emailInfo && emailTooltip && !emailInfo.contains(e.target) && !emailTooltip.contains(e.target)) {
-      emailTooltip.classList.add('hidden');
-    }
-    if (urlInfo && urlTooltip && !urlInfo.contains(e.target) && !urlTooltip.contains(e.target)) {
-      urlTooltip.classList.add('hidden');
-    }
-  });
-
-  // Auto-prepend https:// to URL field
-  const urlInput = document.querySelector('input[name="url"]');
-  if (urlInput) {
-    urlInput.addEventListener('blur', function() {
-      let url = this.value.trim();
-      if (url && !url.match(/^https?:\/\//)) {
-        this.value = 'https://' + url;
-      }
-    });
-  }
-}
-
-// Run initialization when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeFormFunctionality);
-} else {
-  // DOM is already loaded
-  initializeFormFunctionality();
-}
+})();
 </script>
