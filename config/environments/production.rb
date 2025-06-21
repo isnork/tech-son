@@ -25,49 +25,20 @@ Rails.application.configure do
   config.assets.css_compressor = :scss # Compresses CSS using SCSS
 
   # Enable caching in production
-  config.cache_store = :mem_cache_store, "localhost" # or use Heroku's caching service if available
-  config.action_controller.perform_caching = true
+  config.cache_store = :solid_cache_store
   config.cache_classes = true
-  config.eager_load = true
 
-  # Show full error reports in development only
-  config.consider_all_requests_local = false
-
-# Enable serving static files
+  # Enable serving static files
   config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
-# Enable error reports and disable caching for debugging
+  # Enable error reports and disable caching for debugging
   config.action_dispatch.show_exceptions = false
   config.action_controller.allow_forgery_protection = true
 
   # Production logging
-  config.log_level = :info     # or :debug for more verbose logs
-  config.logger = Logger.new(STDOUT)  # Log to stdout (common in Heroku)
-# Force SSL (HTTPS)
-  config.force_ssl = true
-
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
-
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
-
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
-
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-
-  # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
-
-  # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+  config.logger = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.log_tags = [ :request_id ]
 
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/up"
@@ -75,8 +46,18 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :solid_cache_store
+  # Force SSL (HTTPS)
+  config.force_ssl = true
+  config.assume_ssl = true
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
@@ -87,7 +68,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = { host: 'amibeingscammed.herokuapp.com' }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -107,19 +88,6 @@ Rails.application.configure do
 
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
-
-  config.cache_classes = true
-  config.eager_load = true
-  config.consider_all_requests_local = false
-  config.assets.compile = false
-  config.assets.digest = true
-  config.assets.js_compressor = :uglifier
-  config.assets.css_compressor = :scss
-  config.log_level = :info
-  config.logger = Logger.new(STDOUT)
-  config.force_ssl = true
-  config.action_mailer.default_url_options = { host: 'amibeingscammed.herokuapp.com' }
-  
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
