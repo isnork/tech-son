@@ -192,7 +192,7 @@
 
     <script>
       // Cache-busting version
-      const JS_VERSION = '1.0.3';
+      const JS_VERSION = '1.0.4';
       console.log('History button JavaScript loaded, version:', JS_VERSION);
       
       // Function to initialize history button
@@ -212,185 +212,107 @@
           return;
         }
         
-        console.log('History button elements found, proceeding with initialization');
+        console.log('History button elements found, setting up event listeners');
         
-        // Remove any existing event listeners to prevent duplicates
-        historyToggle.removeEventListener('click', toggleSidebar);
-        if (closeSidebar) {
-          closeSidebar.removeEventListener('click', closeSidebarHandler);
-        }
-        if (sidebarOverlay) {
-          sidebarOverlay.removeEventListener('click', overlayHandler);
-        }
-        
-        // Check if sidebar was previously opened
-        const sidebarOpened = localStorage.getItem('history-sidebar-closed') === 'false';
-        
-        // Initialize sidebar state
-        if (sidebarOpened) {
-          // Start with sidebar open
-          historySidebar.classList.add('translate-x-0');
-          historySidebar.classList.remove('-translate-x-full');
-          mainContent.classList.add('ml-80');
-          toggleIcon.style.transform = 'rotate(0deg)';
-        } else {
-          // Start with sidebar closed (default)
-          historySidebar.classList.remove('translate-x-0');
-          historySidebar.classList.add('-translate-x-full');
-          mainContent.classList.add('ml-0');
-          toggleIcon.style.transform = 'rotate(180deg)';
-        }
-        
-        // Toggle sidebar function
-        function toggleSidebar() {
-          console.log('Toggle sidebar clicked');
+        // Toggle sidebar
+        historyToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('History button clicked');
+          
           const isOpen = historySidebar.classList.contains('translate-x-0');
           
           if (isOpen) {
             // Close sidebar
             historySidebar.classList.remove('translate-x-0');
-            historySidebar.classList.add('-translate-x-full');
-            toggleIcon.style.transform = 'rotate(180deg)';
+            historySidebar.classList.add('translate-x-full');
+            toggleIcon.classList.remove('rotate-180');
+            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
             mainContent.classList.remove('ml-80');
-            mainContent.classList.add('ml-0');
-            if (sidebarOverlay) {
-              sidebarOverlay.classList.add('hidden');
-            }
-            localStorage.setItem('history-sidebar-closed', 'true');
           } else {
             // Open sidebar
-            historySidebar.classList.remove('-translate-x-full');
+            historySidebar.classList.remove('translate-x-full');
             historySidebar.classList.add('translate-x-0');
-            toggleIcon.style.transform = 'rotate(0deg)';
-            mainContent.classList.remove('ml-0');
+            toggleIcon.classList.add('rotate-180');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
             mainContent.classList.add('ml-80');
-            if (window.innerWidth < 1024 && sidebarOverlay) {
-              sidebarOverlay.classList.remove('hidden');
-            }
-            localStorage.setItem('history-sidebar-closed', 'false');
           }
-        }
+        });
         
-        // Close sidebar handler
-        function closeSidebarHandler() {
-          historySidebar.classList.remove('translate-x-0');
-          historySidebar.classList.add('-translate-x-full');
-          toggleIcon.style.transform = 'rotate(180deg)';
-          mainContent.classList.remove('ml-80');
-          mainContent.classList.add('ml-0');
-          if (sidebarOverlay) {
-            sidebarOverlay.classList.add('hidden');
-          }
-          localStorage.setItem('history-sidebar-closed', 'true');
-        }
-        
-        // Overlay handler
-        function overlayHandler() {
-          historySidebar.classList.remove('translate-x-0');
-          historySidebar.classList.add('-translate-x-full');
-          toggleIcon.style.transform = 'rotate(180deg)';
-          mainContent.classList.remove('ml-80');
-          mainContent.classList.add('ml-0');
-          sidebarOverlay.classList.add('hidden');
-          localStorage.setItem('history-sidebar-closed', 'true');
-        }
-        
-        // Event listeners
-        historyToggle.addEventListener('click', toggleSidebar);
-        console.log('Event listener added to history toggle button');
-        
+        // Close sidebar when clicking close button
         if (closeSidebar) {
-          closeSidebar.addEventListener('click', closeSidebarHandler);
+          closeSidebar.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close button clicked');
+            
+            historySidebar.classList.remove('translate-x-0');
+            historySidebar.classList.add('translate-x-full');
+            toggleIcon.classList.remove('rotate-180');
+            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+            mainContent.classList.remove('ml-80');
+          });
         }
         
+        // Close sidebar when clicking overlay
         if (sidebarOverlay) {
-          sidebarOverlay.addEventListener('click', overlayHandler);
+          sidebarOverlay.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Overlay clicked');
+            
+            historySidebar.classList.remove('translate-x-0');
+            historySidebar.classList.add('translate-x-full');
+            toggleIcon.classList.remove('rotate-180');
+            sidebarOverlay.classList.add('hidden');
+            mainContent.classList.remove('ml-80');
+          });
         }
         
-        // Handle window resize
-        window.removeEventListener('resize', resizeHandler);
-        window.addEventListener('resize', resizeHandler);
-        
-        function resizeHandler() {
-          if (window.innerWidth >= 1024) { // lg breakpoint
-            if (sidebarOverlay) {
-              sidebarOverlay.classList.add('hidden');
-            }
-            if (historySidebar.classList.contains('translate-x-0')) {
-              mainContent.classList.add('ml-80');
-              mainContent.classList.remove('ml-0');
-            }
-          } else {
-            if (historySidebar.classList.contains('translate-x-0')) {
-              if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('hidden');
-              }
-              mainContent.classList.remove('ml-80');
-              mainContent.classList.add('ml-0');
-            }
-          }
-        }
-
-        // Auto-refresh for analyzing items
-        const analyzingItems = document.querySelectorAll('[class*="bg-yellow-100"]');
-        if (analyzingItems.length > 0) {
-          setTimeout(function() {
-            // Instead of reloading the entire page, just refresh the sidebar content
-            fetch(window.location.pathname)
+        // Auto-refresh history content
+        function refreshHistoryContent() {
+          const historyContent = document.getElementById('history-content');
+          if (historyContent) {
+            fetch('/scam_check')
               .then(response => response.text())
               .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                const newSidebar = doc.getElementById('history-sidebar');
-                const currentSidebar = document.getElementById('history-sidebar');
-                
-                if (newSidebar && currentSidebar) {
-                  // Preserve the current sidebar state
-                  const isOpen = currentSidebar.classList.contains('translate-x-0');
-                  
-                  // Update the sidebar content
-                  currentSidebar.innerHTML = newSidebar.innerHTML;
-                  
-                  // Restore the sidebar state
-                  if (!isOpen) {
-                    currentSidebar.classList.remove('translate-x-0');
-                    currentSidebar.classList.add('-translate-x-full');
-                    const toggleIcon = document.getElementById('toggle-icon');
-                    if (toggleIcon) {
-                      toggleIcon.style.transform = 'rotate(180deg)';
-                    }
-                    const mainContent = document.getElementById('main-content');
-                    if (mainContent) {
-                      mainContent.classList.remove('ml-80');
-                      mainContent.classList.add('ml-0');
-                    }
-                  }
-                  
-                  // Check if we still have analyzing items and continue refreshing if needed
-                  const newAnalyzingItems = document.querySelectorAll('[class*="bg-yellow-100"]');
-                  if (newAnalyzingItems.length > 0) {
-                    setTimeout(arguments.callee, 5000);
-                  }
+                const newHistoryContent = doc.getElementById('history-content');
+                if (newHistoryContent) {
+                  historyContent.innerHTML = newHistoryContent.innerHTML;
                 }
               })
               .catch(error => {
-                console.error('Error refreshing sidebar:', error);
+                console.error('Error refreshing history:', error);
               });
-          }, 5000);
+          }
         }
+        
+        // Refresh history every 30 seconds
+        setInterval(refreshHistoryContent, 30000);
+        
+        console.log('History button initialization complete');
       }
-
-      // Initialize on DOM content loaded
-      document.addEventListener('DOMContentLoaded', initializeHistoryButton);
       
-      // Also initialize immediately if DOM is already loaded (for navigation)
+      // Run initialization when DOM is ready
       if (document.readyState === 'loading') {
-        // DOM is still loading, wait for DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initializeHistoryButton);
       } else {
-        // DOM is already loaded, initialize immediately
-        console.log('DOM already loaded, initializing immediately');
+        // DOM is already loaded
         initializeHistoryButton();
       }
+      
+      // Also run initialization when the page becomes visible (for navigation)
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          console.log('Page became visible, re-initializing history button');
+          setTimeout(initializeHistoryButton, 100);
+        }
+      });
+      
+      // Run initialization after a short delay to ensure all elements are loaded
+      setTimeout(initializeHistoryButton, 500);
 
       // Global function for toggling analysis
       function toggleAnalysis(checkId) {
