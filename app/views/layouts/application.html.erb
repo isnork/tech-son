@@ -199,9 +199,8 @@
         console.log('Toggle history sidebar called');
         const sidebar = document.getElementById('history-sidebar');
         const toggleIcon = document.getElementById('toggle-icon');
-        const mainContent = document.getElementById('main-content');
         
-        if (sidebar && toggleIcon && mainContent) {
+        if (sidebar && toggleIcon) {
           const isOpen = sidebar.classList.contains('translate-x-0');
           
           if (isOpen) {
@@ -209,21 +208,18 @@
             sidebar.classList.remove('translate-x-0');
             sidebar.classList.add('-translate-x-full');
             toggleIcon.classList.remove('rotate-180');
-            mainContent.classList.remove('mr-80');
           } else {
             // Open sidebar
             sidebar.classList.remove('-translate-x-full');
             sidebar.classList.add('translate-x-0');
             toggleIcon.classList.add('rotate-180');
-            mainContent.classList.add('mr-80');
           }
           
           console.log('Sidebar toggled, isOpen:', !isOpen);
         } else {
           console.log('Required elements not found:', {
             sidebar: !!sidebar,
-            toggleIcon: !!toggleIcon,
-            mainContent: !!mainContent
+            toggleIcon: !!toggleIcon
           });
         }
       }
@@ -233,13 +229,11 @@
         console.log('Close history sidebar called');
         const sidebar = document.getElementById('history-sidebar');
         const toggleIcon = document.getElementById('toggle-icon');
-        const mainContent = document.getElementById('main-content');
         
-        if (sidebar && toggleIcon && mainContent) {
+        if (sidebar && toggleIcon) {
           sidebar.classList.remove('translate-x-0');
           sidebar.classList.add('-translate-x-full');
           toggleIcon.classList.remove('rotate-180');
-          mainContent.classList.remove('mr-80');
           console.log('Sidebar closed');
         }
       }
